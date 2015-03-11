@@ -5,7 +5,7 @@ module.exports = {
 };
 
 function connect(cb){
-    mongoose.connect("mongodb://localhost/my_world_test");
+    mongoose.connect(process.env.CONN);
     mongoose.connection.once("open", function(){
         cb();
     });
