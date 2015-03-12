@@ -19,20 +19,40 @@ PersonSchema.statics.getAll = function(cb){
 
 var Person = mongoose.model("Person", PersonSchema);
 
+var ThingSchema = new mongoose.Schema({
+  name: String
+});
+
+ThingSchema.statics.getThingByName = function(name, cb){
+  this.findOne({name: name}, cb);
+};
+
+var Thing = mongoose.model("Thing", ThingSchema);
+
 function seed(cb){
   var people = [
     { name: "Moe" },
     { name: "Larry"},
     { name: "Curly" }
   ];
+  var things = [
+    { name: "Rock"},
+    { name: "Paper" },
+    { name: "Scissors"}
+  ];
   Person.remove({}, function(){
     Person.create(people, function(err, moe, larry, curly){
-       cb(err, moe, larry, curly); 
+      Thing.remove({}, function(){
+        Thing.create(things, function(err, rock, paper, scissors){
+            cb(err, moe, larry, curly, rock, paper, scissors); 
+        });
+      });
     });
   });
 }
 
 module.exports = {
   seed: seed,
-  Person: Person
+  Person: Person,
+  Thing: Thing
 };

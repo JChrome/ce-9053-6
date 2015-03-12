@@ -1,5 +1,6 @@
 var models = require("../../models/models");
 var Person = models.Person;
+var Thing = models.Thing;
 var db = require("../../config/db");
 describe("models", function(){
     var ids = {};
@@ -63,6 +64,22 @@ describe("models", function(){
         
       });
       
-    });
+    });//end of person tests
+    describe("Thing", function(){
+      describe("getThingByName", function(){
+        var thing;
+        beforeEach(function(done){
+          Thing.getThingByName("Rock", function(err, _thing){
+            thing = _thing;
+            done();
+          }); 
+        });
+        
+        it("is a rock", function(){
+          expect(thing.name).toEqual("Rock");
+        });
+        
+      });//end of getOneByName
+    });//end of Thing
     
 });
