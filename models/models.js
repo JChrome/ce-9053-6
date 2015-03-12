@@ -42,6 +42,35 @@ PersonSchema.statics.acquire = function(personId, thingId, cb){
   });
 };
 
+PersonSchema.statics.returnThing = function(personId, thingId, index, cb){
+  var qry = { _id: personId };
+  var obj = {};
+  obj["things." + index] = "whatever";
+  this.update(qry, {$unset: obj}, function(){
+      var update = { 
+        $pull: { 
+          things: null
+        }, 
+        $inc: {
+          numberOfThings: -1    
+        }
+      };
+      Person.update(qry, update, function(err){
+        var query = { _id : thingId };
+        var update = {
+          $inc: {
+            numberOwned: -1,
+            numberInStock: 1
+          }
+        }
+        Thing.update(query, update, function(){
+          cb();    
+        });
+      });
+      
+  });
+};
+
 
 var Person = mongoose.model("Person", PersonSchema);
 

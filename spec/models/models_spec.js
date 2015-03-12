@@ -90,11 +90,17 @@ describe("models", function(){
             expect(paperThing.numberInStock).toEqual(9); 
           });
           describe("moe gives back a rock", function(){
-              beforeEach(function(done){
-                giveMoeTwoRocksAndAPairOfScissors(function(){
-                  Person.returnThing(ids.moeId, ids.rockId, function(){
+            beforeEach(function(done){
+                Person.returnThing(ids.moeId, ids.rockId, 1, function(){
+                  Person.getOneByName("Moe", function(err, _person){
+                      console.log(_person.things);
+                    things = getThingsFromMoe(_person);  
+                    done();
                   });
                 });
+            });
+              it("moe has a rock and a piece of paper", function(){
+                  expect(things).toEqual(["Rock", "Paper"]);
               });
           });
         });
