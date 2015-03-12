@@ -19,55 +19,49 @@ PersonSchema.statics.getAll = function(cb){
 };
 
 PersonSchema.statics.acquire = function(personId, thingId, cb){
-  var qry = { _id: personId };
-  var update = { 
-    $push: { 
-      things: thingId
-    }, 
-    $inc: {
-      numberOfThings: 1    
-    }
-  };
-  this.update(qry, update, function(err){
-    var query = { _id : thingId };
-    var update = {
-      $inc: {
-        numberOwned: 1,
-        numberInStock: -1
-      }
-    }
-    Thing.update(query, update, function(){
-      cb();    
-    });
-  });
-};
-
-PersonSchema.statics.returnThing = function(personId, thingId, index, cb){
-  var qry = { _id: personId };
-  var obj = {};
-  obj["things." + index] = "whatever";
-  this.update(qry, {$unset: obj}, function(){
+    Thing.findById(thingId, function(err, _thing){
+        if(_thing.numberInStock <= 0)
+            return cb({message: "NONE_IN_STOCK"});
+      var qry = { _id: personId };
       var update = { 
-        $pull: { 
-          things: null
+        $push: { 
+          things: thingId
         }, 
         $inc: {
-          numberOfThings: -1    
+          numberOfThings: 1    
         }
       };
       Person.update(qry, update, function(err){
         var query = { _id : thingId };
         var update = {
           $inc: {
-            numberOwned: -1,
-            numberInStock: 1
+            numberOwned: 1,
+            numberInStock: -1
           }
         }
         Thing.update(query, update, function(){
           cb();    
         });
       });
-      
+    });
+};
+
+PersonSchema.statics.returnThing = function(personId, thingId, cb){
+  this.findById(personId, function(err, _person){
+      var index = _person.things.indexOf(thingId);
+      if(index == -1)
+        return cb({message: "USER_DOES_NOT_OWN"}, null);
+      _person.things.splice(index, 1);
+      _person.numberOwned = _person.numberOwned + 1;
+      _person.save(function(err){
+        var query = { _id : thingId };
+        var update = {
+          $inc: { numberOwned: -1, numberInStock: 1}
+        };
+        Thing.update(query, update, function(){
+          cb();    
+        });
+      });
   });
 };
 

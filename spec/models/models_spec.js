@@ -91,17 +91,54 @@ describe("models", function(){
           });
           describe("moe gives back a rock", function(){
             beforeEach(function(done){
-                Person.returnThing(ids.moeId, ids.rockId, 1, function(){
-                  Person.getOneByName("Moe", function(err, _person){
-                      console.log(_person.things);
-                    things = getThingsFromMoe(_person);  
+              Person.returnThing(ids.moeId, ids.rockId, function(){
+                Person.getOneByName("Moe", function(err, _person){
+                  things = getThingsFromMoe(_person);  
+                  Thing.getOneByName("Rock", function(err, _thing){
+                    rockThing = _thing;  
                     done();
                   });
                 });
-            });
-              it("moe has a rock and a piece of paper", function(){
-                  expect(things).toEqual(["Rock", "Paper"]);
               });
+            });
+            it("moe has a rock and a piece of paper", function(){
+                expect(things).toEqual(["Rock", "Paper"]);
+            });
+            it("There are now 9 rocks in stock", function(){
+                expect(rockThing.numberInStock).toEqual(9);
+            });
+            it("One Rock is owned", function(){
+                expect(rockThing.numberOwned).toEqual(1);
+            });
+          });
+          describe("moe gives back paper", function(){
+            var message;
+            beforeEach(function(done){
+              Person.returnThing(ids.moeId, ids.scissorsId, function(err){
+                  message = err.message;
+                  done();
+              });
+            });
+            it("error is thrown", function(){
+                expect(message).toEqual("USER_DOES_NOT_OWN");
+            });
+          });
+          describe("There is no paper", function(){
+            beforeEach(function(done){
+              Thing.update({_id: ids.paperId}, {$set:{numberInStock: 0}}, done)
+            });
+            describe("Moe attempts to get paper", function(){
+                var message;
+                beforeEach(function(done){
+                  Person.acquire(ids.moeId, ids.paperId, function(err){
+                    message = err.message;
+                      done();
+                  });
+                });
+                it("moe doesn't get to own paper", function(){
+                    expect(message).toEqual("NONE_IN_STOCK");
+                });
+            });
           });
         });
       });
