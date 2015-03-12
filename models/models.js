@@ -31,6 +31,10 @@ ThingSchema.statics.getOneById = function(id, cb){
   this.findById(id, cb);
 };
 
+ThingSchema.statics.getAll = function(cb){
+  this.find({}).sort("name").exec(cb);
+};
+
 var Thing = mongoose.model("Thing", ThingSchema);
 
 function seed(cb){

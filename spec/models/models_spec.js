@@ -102,6 +102,21 @@ describe("models", function(){
           expect(thing.name).toEqual("Rock");
         });
       });
+      describe("getAll", function(){
+        var things;
+        beforeEach(function(done){
+          Thing.getAll(function(err, _things){
+            things = _things.map(function(thing){
+              return thing.name;
+            });
+            done();
+          });
+        });
+        it("return [Paper, Rock, Scissors]", function(){
+          expect(things).toEqual(["Paper", "Rock", "Scissors"]); 
+        });
+        
+      });
     });//end of Thing
     
 });
