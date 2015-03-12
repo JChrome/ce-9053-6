@@ -23,7 +23,7 @@ var ThingSchema = new mongoose.Schema({
   name: String
 });
 
-ThingSchema.statics.getThingByName = function(name, cb){
+ThingSchema.statics.getOneByName = function(name, cb){
   this.findOne({name: name}, cb);
 };
 

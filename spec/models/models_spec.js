@@ -66,10 +66,10 @@ describe("models", function(){
       
     });//end of person tests
     describe("Thing", function(){
-      describe("getThingByName", function(){
+      describe("getOneByName", function(){
         var thing;
         beforeEach(function(done){
-          Thing.getThingByName("Rock", function(err, _thing){
+          Thing.getOneByName("Rock", function(err, _thing){
             thing = _thing;
             done();
           }); 
@@ -78,8 +78,13 @@ describe("models", function(){
         it("is a rock", function(){
           expect(thing.name).toEqual("Rock");
         });
-        
       });//end of getOneByName
+      xdescribe("getThingById", function(){
+        var thing; 
+        beforeEach(function(done){
+          
+        });
+      });
     });//end of Thing
     
 });
