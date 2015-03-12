@@ -27,6 +27,10 @@ ThingSchema.statics.getOneByName = function(name, cb){
   this.findOne({name: name}, cb);
 };
 
+ThingSchema.statics.getOneById = function(id, cb){
+  this.findById(id, cb);
+};
+
 var Thing = mongoose.model("Thing", ThingSchema);
 
 function seed(cb){

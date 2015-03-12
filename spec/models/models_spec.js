@@ -6,10 +6,21 @@ describe("models", function(){
     var ids = {};
     beforeEach(function(done){
         db.connect(function(){
-            models.seed(function(err, moe, larry, curly){
+            models.seed(function(
+              err, 
+              moe, 
+              larry, 
+              curly, 
+              rock,
+              paper,
+              scissors)
+              {
                 ids.moeId = moe._id;
                 ids.larryId = larry._id;
                 ids.curlyId = curly._id;
+                ids.rockId = rock._id;
+                ids.paperId = paper._id;
+                ids.scissorsId = scissors._id;
                 done();
             });
         });
@@ -79,10 +90,16 @@ describe("models", function(){
           expect(thing.name).toEqual("Rock");
         });
       });//end of getOneByName
-      xdescribe("getThingById", function(){
+      describe("getOneById", function(){
         var thing; 
         beforeEach(function(done){
-          
+          Thing.getOneById(ids.rockId, function(err, _thing){
+            thing = _thing;
+            done();
+          });
+        });
+        it("is a rock", function(){
+          expect(thing.name).toEqual("Rock");
         });
       });
     });//end of Thing
