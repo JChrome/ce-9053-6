@@ -48,6 +48,14 @@ describe("models", function(){
               });
             });
           };
+          
+          var getThingsFromMoe = function(moe){
+            return moe.things.map(
+              function(thing){
+                return thing.name;
+              }
+            );
+          };
           beforeEach(function(done){
             giveMoeTwoRocksAndAPairOfScissors(function(){
               Thing.getOneByName("Rock", function(err, _thing){
@@ -55,11 +63,7 @@ describe("models", function(){
                 Thing.getOneByName("Paper", function(err, _thing){
                   paperThing = _thing 
                   Person.getOneByName("Moe", function(err, _person){
-                    things = _person.things.map(
-                        function(thing){
-                            return thing.name;
-                        }
-                    );
+                    things = getThingsFromMoe(_person);
                     person = _person;
                     done();
                   });
@@ -84,6 +88,14 @@ describe("models", function(){
           });
           it("There are 9 pieces of paper  left", function(){
             expect(paperThing.numberInStock).toEqual(9); 
+          });
+          describe("moe gives back a rock", function(){
+              beforeEach(function(done){
+                giveMoeTwoRocksAndAPairOfScissors(function(){
+                  Person.returnThing(ids.moeId, ids.rockId, function(){
+                  });
+                });
+              });
           });
         });
       });
