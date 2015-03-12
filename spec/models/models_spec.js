@@ -38,24 +38,30 @@ describe("models", function(){
           var rockThing;
           var paperThing;
           var person;
-          beforeEach(function(done){
+          
+          var giveMoeTwoRocksAndAPairOfScissors = function(cb){
             Person.acquire(ids.moeId, ids.rockId, function(){
               Person.acquire(ids.moeId, ids.rockId, function(){
                 Person.acquire(ids.moeId, ids.paperId, function(){
-                  Thing.getOneByName("Rock", function(err, _thing){
-                    rockThing = _thing;
-                    Thing.getOneByName("Paper", function(err, _thing){
-                      paperThing = _thing 
-                      Person.getOneByName("Moe", function(err, _person){
-                        things = _person.things.map(
-                            function(thing){
-                                return thing.name;
-                            }
-                        );
-                        person = _person;
-                        done();
-                      });
-                    });
+                    cb();
+                });
+              });
+            });
+          };
+          beforeEach(function(done){
+            giveMoeTwoRocksAndAPairOfScissors(function(){
+              Thing.getOneByName("Rock", function(err, _thing){
+                rockThing = _thing;
+                Thing.getOneByName("Paper", function(err, _thing){
+                  paperThing = _thing 
+                  Person.getOneByName("Moe", function(err, _person){
+                    things = _person.things.map(
+                        function(thing){
+                            return thing.name;
+                        }
+                    );
+                    person = _person;
+                    done();
                   });
                 });
               });
