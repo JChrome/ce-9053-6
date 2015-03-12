@@ -33,38 +33,51 @@ describe("models", function(){
     
     describe("Person", function(){
       describe("acquire", function(){
-        describe("Moe gets a Rock", function(){
-          var thing;
+        describe("Moe gets two rocks and piece of paper", function(){
+          var things;
+          var rockThing;
+          var paperThing;
           var person;
           beforeEach(function(done){
             Person.acquire(ids.moeId, ids.rockId, function(){
               Person.acquire(ids.moeId, ids.rockId, function(){
-                Thing.getOneByName("Rock", function(err, _thing){
-                  thing = _thing;
-                  Person.getOneByName("Moe", function(err, _person){
-                    //console.log(_person);
-                    person = _person;
-                    done();
+                Person.acquire(ids.moeId, ids.paperId, function(){
+                  Thing.getOneByName("Rock", function(err, _thing){
+                    rockThing = _thing;
+                    Thing.getOneByName("Paper", function(err, _thing){
+                      paperThing = _thing 
+                      Person.getOneByName("Moe", function(err, _person){
+                        things = _person.things.map(
+                            function(thing){
+                                return thing.name;
+                            }
+                        );
+                        person = _person;
+                        done();
+                      });
+                    });
                   });
                 });
               });
             });
           });
-          it("Moe has one thing", function(){
-            expect(person.things.length).toEqual(2)
+          it("Moe has three things", function(){
+            expect(person.things.length).toEqual(3)
           });
-          it("Moe's numberOfthings is 1", function(){
-            expect(person.numberOfThings).toEqual(2); 
+          it("Moe's numberOfthings is 3", function(){
+            expect(person.numberOfThings).toEqual(3); 
           });
-          it("Moe has a rock", function(){
-            console.log(person.things[0]);
-            expect(person.things[0].name).toEqual("Rock");
+          it("Moe has a two rocks and paper", function(){
+            expect(things).toEqual(["Rock", "Rock", "Paper"]);
           });
-          it("Rock has one owner", function(){
-            expect(thing.numberOwned).toEqual(2); 
+          it("Rock is owned twice", function(){
+            expect(rockThing.numberOwned).toEqual(2); 
           });
-          it("Rock has 9 items left in stock", function(){
-            expect(thing.numberInStock).toEqual(8); 
+          it("There are 8 rocks left", function(){
+            expect(rockThing.numberInStock).toEqual(8); 
+          });
+          it("There are 9 pieces of paper  left", function(){
+            expect(paperThing.numberInStock).toEqual(9); 
           });
         });
       });
