@@ -32,6 +32,42 @@ describe("models", function(){
     });
     
     describe("Person", function(){
+      describe("acquire", function(){
+        describe("Moe gets a Rock", function(){
+          var thing;
+          var person;
+          beforeEach(function(done){
+            Person.acquire(ids.moeId, ids.rockId, function(){
+              Person.acquire(ids.moeId, ids.rockId, function(){
+                Thing.getOneByName("Rock", function(err, _thing){
+                  thing = _thing;
+                  Person.getOneByName("Moe", function(err, _person){
+                    //console.log(_person);
+                    person = _person;
+                    done();
+                  });
+                });
+              });
+            });
+          });
+          it("Moe has one thing", function(){
+            expect(person.things.length).toEqual(2)
+          });
+          it("Moe's numberOfthings is 1", function(){
+            expect(person.numberOfThings).toEqual(2); 
+          });
+          it("Moe has a rock", function(){
+            console.log(person.things[0]);
+            expect(person.things[0].name).toEqual("Rock");
+          });
+          it("Rock has one owner", function(){
+            expect(thing.numberOwned).toEqual(2); 
+          });
+          it("Rock has 9 items left in stock", function(){
+            expect(thing.numberInStock).toEqual(8); 
+          });
+        });
+      });
       describe("getPersonByName", function(){
           var person;
           beforeEach(function(done){

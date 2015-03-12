@@ -1,11 +1,13 @@
 var mongoose = require("mongoose");
 
 var PersonSchema = new mongoose.Schema({
-  name: String
+  name: String,
+  things: [{type: mongoose.Schema.ObjectId, ref: "Thing"}],
+  numberOfThings: { type: Number, default: 0}
 });
 
 PersonSchema.statics.getOneByName = function(name, cb){
-  this.findOne({name: name}, cb);  
+  this.findOne({name: name}).populate("things").exec(cb);  
 };
 
 PersonSchema.statics.getOneById = function(id, cb){
@@ -16,11 +18,37 @@ PersonSchema.statics.getAll = function(cb){
   this.find({}).sort("name").exec(cb);
 };
 
+PersonSchema.statics.acquire = function(personId, thingId, cb){
+  var qry = { _id: personId };
+  var update = { 
+    $push: { 
+      things: thingId
+    }, 
+    $inc: {
+      numberOfThings: 1    
+    }
+  };
+  this.update(qry, update, function(err){
+    var query = { _id : thingId };
+    var update = {
+      $inc: {
+        numberOwned: 1,
+        numberInStock: -1
+      }
+    }
+    Thing.update(query, update, function(){
+      cb();    
+    });
+  });
+};
+
 
 var Person = mongoose.model("Person", PersonSchema);
 
 var ThingSchema = new mongoose.Schema({
-  name: String
+  name: String,
+  numberOwned: { type: Number, default: 0 },
+  numberInStock: Number
 });
 
 ThingSchema.statics.getOneByName = function(name, cb){
@@ -44,9 +72,9 @@ function seed(cb){
     { name: "Curly" }
   ];
   var things = [
-    { name: "Rock"},
-    { name: "Paper" },
-    { name: "Scissors"}
+    { name: "Rock", numberInStock: 10},
+    { name: "Paper", numberInStock: 10},
+    { name: "Scissors", numberInStock: 10}
   ];
   Person.remove({}, function(){
     Person.create(people, function(err, moe, larry, curly){
